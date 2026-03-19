@@ -5,7 +5,7 @@ import 'package:primer_parcial/core/network/dio_client.dart';
 import 'package:primer_parcial/data/services/agents_service.dart';
 
 class AgentDetailScreen extends StatefulWidget {
-  final String uuid;
+  final String uuid; //recibimos el UUID desde la pantalla anterior definiendo que agentes cargar
 
   const AgentDetailScreen({super.key, required this.uuid});
 
@@ -14,6 +14,7 @@ class AgentDetailScreen extends StatefulWidget {
 }
 
 class _AgentDetailScreenState extends State<AgentDetailScreen> {
+  // Manejo del estado (datos de agente y estado de carga)
   Map? agent;
   bool isLoading = true;
   
@@ -26,9 +27,10 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
   Future<void> loadAgent() async {
     final dioClient = DioClient();
     final service = AgentsService(dioClient.dio);
-
+    //consumo del API usando el UUID recibido
     final response = await service.getAgentById(widget.uuid);
 
+    // guardamos los datos del agente devueltos por el API   
     setState(() {
       agent = response["data"];
       isLoading = false;
@@ -37,11 +39,12 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Evitamos renderizar sin datos
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return SingleChildScrollView(
+    return SingleChildScrollView( //permitimos el scroll vertical, necesario por el uso de imagen, texto y habilidades
       padding: const EdgeInsets.all(16),
       child: Card(
         elevation: 8,
@@ -56,7 +59,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  agent!["fullPortrait"],
+                  agent!["fullPortrait"], //llamamos la propiedad del agente
                   height: 220,
                   fit: BoxFit.cover,
                 ),
@@ -64,7 +67,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
               const SizedBox(height: 16),
               Text(
-                agent!["displayName"],
+                agent!["displayName"], //llamamos la propiedad del agente
                 style: const TextStyle(
                   fontSize: 25, 
                   fontWeight: FontWeight.bold
@@ -73,13 +76,13 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
               const SizedBox(height: 8),
               Text(
-                agent!["description"],
+                agent!["description"], //llamamos la propiedad del agente
                 textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 16),
               Align(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.centerLeft, //Alinemaos titulo a la izquierda rompiendo centrado anterior: mejor lectura
                 child: Text(
                   "Habilidades",
                   style: const TextStyle(
@@ -91,14 +94,18 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
               const SizedBox(height: 8),
               Column(
+                // Tomamos la lista del JSON transformadola en widgets
                 children: (agent!["abilities"] as List).map((ability){
+                  // Evitamos mostrar habilidades vacias
                   if(ability["displayName"] == null) {
                     return const SizedBox();
                   }
+                  // definimos un Card por cada habilidad
                   return Card(
                     elevation: 3,
                     margin: const EdgeInsets.symmetric(vertical: 5),
                     child: ListTile(
+                      // definimos si el displayIcon es null o no mostrando iconos dependiendo la validacion
                       leading: ability["displayIcon"] != null
                         ? Image.network(
                             ability["displayIcon"],
@@ -108,7 +115,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
                         : const Icon(Icons.flash_on),
                       title: Text(ability["displayName"]),
                       subtitle: Text(
-                        ability["description"] ?? "",
+                        ability["description"] ?? "", //en caso de la descripcion ser null muestra vacio
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),

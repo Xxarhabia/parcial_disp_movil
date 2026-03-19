@@ -6,28 +6,30 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: double.infinity, // Hace que el fondo ocupe todo el espacio disponible
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
+        gradient: LinearGradient( // Aplica el fondo degradado
           colors: [
             Color(0xFF0F1923),
             Color(0XFF1F2A38)
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
+          //Define la direccion del degadado de arriba hacia abajo
         ),
       ),
       child: Center(
+        //centramos todo el contenido en pantalla
         child: Card(
-          elevation: 10,
+          elevation: 10, //sombra efecto flotante
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(20),
+            borderRadius: BorderRadiusGeometry.circular(20), //bordes redondeados
           ),
           margin: const EdgeInsets.all(24),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min, // hace que la card se ajuste al contenido
               children: [
                 const Icon(
                   Icons.person,
@@ -42,7 +44,8 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                const Divider(height: 30),
+                const Divider(height: 30), // linea separadora + espacio vertical
+                //reutilizadcion de UI
                 _buildPerson("Mario Luis Sarabia Carrascal", "192014"),
                 const SizedBox(height: 10),
                 _buildPerson("Javier Mauricio Serna Osorio", "192546")

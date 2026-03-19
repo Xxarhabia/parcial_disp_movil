@@ -14,6 +14,7 @@ class AgentsScreen extends StatefulWidget {
 }
 
 class _AgentsScreenState extends State<AgentsScreen> {
+  //Manejo basico de estados: datos y UI
   List agents = [];
   bool isLoading = true;
 
@@ -25,25 +26,29 @@ class _AgentsScreenState extends State<AgentsScreen> {
   
   @override
   Widget build(BuildContext context) {
+    //Si no hay datos no renderiza nada
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // Lista dinamica: renderiza solo lo visible
     return ListView.builder(
       itemCount: agents.length,
       itemBuilder: (context, index) {
         final agent = agents[index];
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //agregamos un padding simetrico tanto vertical como horizaontalmente
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), 
           child: Card(
-            elevation: 6,
+            elevation: 6, // agrgamos sombra
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)
+              borderRadius: BorderRadius.circular(16), //Agregamos bordes redondeados
             ),
-            child: InkWell(
+            child: InkWell( //efecto visual al tocar, hace la card clickeable
               borderRadius: BorderRadius.circular(16),
               onTap: () {
+                //Realizamos la navegacion a otra pantalla pasando el UUID
                 Navigator.push(
                   context, 
                   MaterialPageRoute(
@@ -53,10 +58,12 @@ class _AgentsScreenState extends State<AgentsScreen> {
               },
               child: Padding(
                 padding: const EdgeInsets.all(12),
+                // usamos Row para poner la imagen a la izquierda y texto a la derecha
                 child: Row(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
+                      //validamos lo que se muestra en caso si displayIcon es null o no
                       child: agent.displayIcon != null
                         ? Image.network(
                             agent.displayIcon!,
@@ -73,6 +80,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                     ),
 
                     const SizedBox(width: 12),
+                    // evitamos el overflow y permitimos que el texto se adapte
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +94,7 @@ class _AgentsScreenState extends State<AgentsScreen> {
                           ),
                           Text(
                             agent.description,
-                            maxLines: 2,
+                            maxLines: 2, //limitamos la cantidad de lineas para que no se vea cargado
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.grey[600],
@@ -107,12 +115,15 @@ class _AgentsScreenState extends State<AgentsScreen> {
 
   Future<void> loadAgents() async {
     try {
+      //Realizamos la carga de datos con aquitectura en capas (dio, service, repository)
       final dioClient = DioClient();
       final agentsService = AgentsService(dioClient.dio);
       final agentsRepository = AgentsRepository(agentsService);
 
+      // Llamada asincrona a la API
       final data  = await agentsRepository.getAgents();
 
+      // Actualizamos la UI y disparamos un rebuild
       setState(() {
         agents = data;
         isLoading = false;
