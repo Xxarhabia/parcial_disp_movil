@@ -34,29 +34,72 @@ class _AgentsScreenState extends State<AgentsScreen> {
       itemBuilder: (context, index) {
         final agent = agents[index];
 
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: agent.displayIcon != null
-              ? NetworkImage(agent.displayIcon!)
-              : null,
-            child: agent.displayIcon == null
-              ? const Icon(Icons.person)
-              : null,
-          ),
-          title: Text(agent.displayName),
-          subtitle: Text(agent.description),
-          onTap: () async {
-            final dioClient = DioClient();
-            final service = AgentsService(dioClient.dio);
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Card(
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (_) => AgentDetailScreen(uuid: agent.uuid),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: agent.displayIcon != null
+                        ? Image.network(
+                            agent.displayIcon!,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.person),
+                          ),
+                    ),
 
-            final response = await service.getAgentById(agent.uuid);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AgentDetailScreen(uuid: agent.uuid)
-              ) 
-            );
-          },
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            agent.displayName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            agent.description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
