@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:primer_parcial/core/network/dio_client.dart';
 import 'package:primer_parcial/data/repositories/agents_repository.dart';
 import 'package:primer_parcial/data/services/agents_service.dart';
+import 'package:primer_parcial/presentation/screen/agents/agent_detail_screen.dart';
 
 class AgentsScreen extends StatefulWidget {
   const AgentsScreen({super.key});
@@ -42,8 +45,17 @@ class _AgentsScreenState extends State<AgentsScreen> {
           ),
           title: Text(agent.displayName),
           subtitle: Text(agent.description),
-          onTap: () {
-            
+          onTap: () async {
+            final dioClient = DioClient();
+            final service = AgentsService(dioClient.dio);
+
+            final response = await service.getAgentById(agent.uuid);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AgentDetailScreen(uuid: agent.uuid)
+              ) 
+            );
           },
         );
       },

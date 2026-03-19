@@ -8,4 +8,8 @@ class AgentsRepository {
   Future<List<dynamic>> getAgents() async {
     return await service.getAgents();
   }
+
+  Future<dynamic> getAgentById(String uuid) async {
+    return await service.getAgentById(uuid);
+  }
 }
